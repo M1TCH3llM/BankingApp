@@ -33,7 +33,7 @@
 
           <!-- CSRF (safe if Spring Security present; harmless otherwise) -->
           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-
+          <form:hidden path="branchId"/>
           <div class="col-12">
             <label class="form-label" for="branchName">Branch Name</label>
             <form:input path="branchName" id="branchName" cssClass="form-control" placeholder="" />
@@ -78,7 +78,6 @@
 
           <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Create</button>
-            <a href="${pageContext.request.contextPath}/branch/page" class="btn btn-outline-secondary">Reset</a>
           </div>
         </form:form>
       </div>
@@ -101,6 +100,8 @@
                 <th>State</th>
                 <th>ZIP</th>
                 <th>Country</th>
+                <th>Edit</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -125,7 +126,18 @@
                       <td><c:out value="${b.branchAddress.state}" /></td>
                       <td><c:out value="${b.branchAddress.zip}" /></td>
                       <td><c:out value="${b.branchAddress.country}" /></td>
-                    </tr>
+                      <td>
+  						<a class="btn btn-sm btn-outline-warning" href="<c:url value='/branch/page'><c:param name='editId' value='${b.branchId}'/></c:url>">Edit</a>
+  					  </td>
+  					  <td>
+ 						 <form action="${pageContext.request.contextPath}/branch/delete/${b.branchId}"
+      									 method="post" class="d-inline">
+    								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+   									 <input type="hidden" name="_method" value="delete" />
+   									 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+  									</form>
+							</td>                   
+					 </tr>
                   </c:forEach>
                 </c:otherwise>
               </c:choose>

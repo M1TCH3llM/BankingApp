@@ -27,21 +27,55 @@ public class BranchController {
 
 
     @GetMapping("/page")
-    public String branchPage(Model model) {
-        Branch form = new Branch();
-        form.setBranchAddress(new Address());
+    public String branchPage(@RequestParam(value = "editId", required = false) Long editId,
+                             Model model) {
+        Branch form;
+
+        if (editId != null) {
+            form = branchService.findBranchById(editId);
+            if (form == null) {
+                form = new Branch();
+            }
+        } else {
+            form = new Branch();
+        }
+
+        if (form.getBranchAddress() == null) {
+            form.setBranchAddress(new Address());
+        }
+
         model.addAttribute("branch", form);
         model.addAttribute("branches", branchService.findAll());
-        return "branchForm"; // <-- was "branches"
+        return "branchForm";
     }
 
 
     @PostMapping("/page")
     public String createFromForm(@ModelAttribute("branch") Branch branch, RedirectAttributes ra) {
+        boolean isUpdate = (branch.getBranchId() != null);
+
         branchService.saveBranch(branch);
-        ra.addFlashAttribute("msg", "Branch created.");
+
+        if (isUpdate) {
+            ra.addFlashAttribute("message", "Branch updated.");
+        } else {
+            ra.addFlashAttribute("message", "Branch created.");
+        }
+
         return "redirect:/branch/page";
     }
+    
+    @PostMapping("/delete/{id:\\d+}")
+    public String deleteFromForm(@PathVariable("id") Long id, RedirectAttributes ra) {
+        Branch deleted = branchService.deleteBranchById(id);
+        if (deleted != null) {
+            ra.addFlashAttribute("message", "Branch deleted.");
+        } else {
+            ra.addFlashAttribute("message", "Branch not found.");
+        }
+        return "redirect:/branch/page";
+    }
+ 
 
     // ===== JSON I used these to test end-points and make sure data base worked with out a JSP page =====
 
@@ -87,4 +121,5 @@ public class BranchController {
         return (deleted == null) ? ResponseEntity.notFound().build() : ResponseEntity.ok(deleted);
     }
 }
+
 
