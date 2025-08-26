@@ -10,8 +10,11 @@ import com.synergisticit.auditing.Auditable;
 import com.synergisticit.enums.AccountType;
 import com.synergisticit.enums.Gender;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,8 +46,10 @@ public class Customer extends Auditable {
 	
 	private String customerSSN;
 	
-	@OneToMany(mappedBy="accountCustomer")
-	private List<Account> customerAccounts = new ArrayList<>();
+	@ElementCollection(targetClass = AccountType.class)
+	@Enumerated(EnumType.STRING)
+	private List<AccountType> customerAccounts = new ArrayList<>();
+
 	
 	@OneToOne
 	private User user; 

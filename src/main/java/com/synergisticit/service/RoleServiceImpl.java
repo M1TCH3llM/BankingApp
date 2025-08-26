@@ -42,11 +42,9 @@ public class RoleServiceImpl implements RoleService{
 	}
 	
 	@Override
-	public Role deleteRoleById(int roleId) {
-	    return roleRepository.findById(roleId).orElse(null);
-//	        .map(role -> { roleRepository.delete(role); return role; })
-//	        .orElse(null);
-	}
+    public void deleteRoleById(int roleId) {
+        roleRepository.deleteById(roleId);
+    }
 	
 	
 }

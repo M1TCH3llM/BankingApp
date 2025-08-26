@@ -3,15 +3,21 @@ package com.synergisticit.controller;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.synergisticit.domain.Address;
 import com.synergisticit.domain.Branch;
 import com.synergisticit.service.BranchService;
+import com.synergisticit.validation.BranchValidators;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/branch")
@@ -22,6 +28,10 @@ public class BranchController {
     public BranchController(BranchService branchService) {
         this.branchService = branchService;
     }
+    
+    @Autowired
+    private BranchValidators branchValidator;
+
 
     // =====  JSP  =====
 
@@ -49,30 +59,25 @@ public class BranchController {
         return "branchForm";
     }
 
-
     @PostMapping("/page")
-    public String createFromForm(@ModelAttribute("branch") Branch branch, RedirectAttributes ra) {
-        boolean isUpdate = (branch.getBranchId() != null);
-
-        branchService.saveBranch(branch);
-
-        if (isUpdate) {
-            ra.addFlashAttribute("message", "Branch updated.");
-        } else {
-            ra.addFlashAttribute("message", "Branch created.");
+    public String createFromForm(@Valid @ModelAttribute("branch") Branch branch,
+                                 BindingResult result,
+                                 RedirectAttributes ra,
+                                 Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("branches", branchService.findAll());
+            return "branchForm"; // JSP shows <form:errors/>
         }
-
+        boolean isUpdate = (branch.getBranchId() != null);
+        branchService.saveBranch(branch);
+        ra.addFlashAttribute("msg", isUpdate ? "Branch updated." : "Branch created.");
         return "redirect:/branch/page";
     }
-    
+  
     @PostMapping("/delete/{id:\\d+}")
-    public String deleteFromForm(@PathVariable("id") Long id, RedirectAttributes ra) {
-        Branch deleted = branchService.deleteBranchById(id);
-        if (deleted != null) {
-            ra.addFlashAttribute("message", "Branch deleted.");
-        } else {
-            ra.addFlashAttribute("message", "Branch not found.");
-        }
+    public String deleteBranchPost(@PathVariable("id") Long id, RedirectAttributes ra) {
+        branchService.deleteBranchById(id); 
+        ra.addFlashAttribute("msg", "Branch deleted.");
         return "redirect:/branch/page";
     }
  
@@ -119,6 +124,11 @@ public class BranchController {
     public ResponseEntity<Branch> deleteBranchById(@PathVariable("id") Long branchId) {
         Branch deleted = branchService.deleteBranchById(branchId);
         return (deleted == null) ? ResponseEntity.notFound().build() : ResponseEntity.ok(deleted);
+    }
+    
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(branchValidator);
     }
 }
 

@@ -77,7 +77,7 @@
           </div>
 
           <div class="col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
           </div>
         </form:form>
       </div>
@@ -131,11 +131,10 @@
   					  </td>
   					  <td>
  						 <form action="${pageContext.request.contextPath}/branch/delete/${b.branchId}"
-      									 method="post" class="d-inline">
-    								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-   									 <input type="hidden" name="_method" value="delete" />
-   									 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-  									</form>
+    						  method="post" class="d-inline">
+ 						 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+ 						 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+						</form>
 							</td>                   
 					 </tr>
                   </c:forEach>
