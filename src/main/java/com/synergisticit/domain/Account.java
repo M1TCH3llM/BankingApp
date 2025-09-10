@@ -37,7 +37,7 @@ public class Account extends Auditable {
 	
 	private double accountBalance;
 	
-	@ManyToOne // person and branch can have many accounts
+	@ManyToOne 
 	private Branch accountBranch;
 	
 

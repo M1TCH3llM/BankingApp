@@ -1,10 +1,12 @@
 package com.synergisticit.config;
 
+import java.util.Collections;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +18,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import com.synergisticit.domain.Role;
+import com.synergisticit.domain.User;
+import com.synergisticit.repository.RoleRepository;
+import com.synergisticit.repository.UserRepository;
 
 //import com.synergisticit.util.AuditorAwareImpl;
 
@@ -50,6 +58,14 @@ public class AppConfig {
 		
 	}
 	
+	@Bean
+	public InternalResourceViewResolver viewResolver() {
+	    InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+	    resolver.setPrefix("/WEB-INF/jsp/");
+	    resolver.setSuffix(".jsp");
+	    return resolver;
+	}
+	
 	
 	Properties properties() {
 		Properties properties = new Properties();
@@ -59,14 +75,6 @@ public class AppConfig {
 		return properties;
 	}
 	
-	@Bean
-	ViewResolver viewResolver() {
-		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setViewClass(JstlView.class);
-		viewResolver.setPrefix("/WEB-INF/jsp/");
-		viewResolver.setSuffix(".jsp");
-		return viewResolver;
-	}
 	
 	@Bean
 	public MessageSource messageSource() {
@@ -76,8 +84,51 @@ public class AppConfig {
 		return messageSource;
 	}
 	
+	 @Bean
+	    CommandLineRunner init(RoleRepository roleRepository, 
+	                           UserRepository userRepository,
+	                           PasswordEncoder encoder) {
+	        return args -> {
+	            // Ensure roles exist
+	            Role adminRole = roleRepository.findByRoleName("ADMIN");
+	            if (adminRole == null) {
+	                adminRole = new Role();
+	                adminRole.setRoleName("ADMIN");
+	                roleRepository.save(adminRole);
+	            }
+
+	            Role userRole = roleRepository.findByRoleName("USER");
+	            if (userRole == null) {
+	                userRole = new Role();
+	                userRole.setRoleName("USER");
+	                roleRepository.save(userRole);
+	            }
+
+	            // Ensure admin exists
+	            if (userRepository.findByUsername("admin") == null) {
+	                User admin = new User();
+	                admin.setUsername("admin");
+	                admin.setPassword(encoder.encode("admin")); 
+	                admin.setEmail("admin@example.com");
+	                admin.setRoles(Collections.singletonList(adminRole));
+	                userRepository.save(admin);
+	            }
+
+	            // Ensure user exists
+	            if (userRepository.findByUsername("user") == null) {
+	                User basic = new User();
+	                basic.setUsername("user");
+	                basic.setPassword(encoder.encode("user")); 
+	                basic.setEmail("user@example.com");
+	                basic.setRoles(Collections.singletonList(userRole));
+	                userRepository.save(basic);
+	            }
+	        };
+	    }
+	}
+	
 //	@Bean
 //	public AuditorAware<String> auditAware(){
 //		return new AuditorAwareImpl();
 //	}
-}
+

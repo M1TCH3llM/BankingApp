@@ -3,6 +3,7 @@ package com.synergisticit.service;
 import java.util.List;
 
 import com.synergisticit.domain.Customer;
+import com.synergisticit.enums.AccountType;
 
 public interface CustomerService {
 	
@@ -12,4 +13,9 @@ public interface CustomerService {
 	List<Customer> findAll();
 	Customer updateCustomerById(Long customerId, Customer updates);
 	Customer deleteCustomerById(Long customerId);
+	
+	Customer saveCustomerAndOpenAccount(Customer customer, 
+										AccountType initialAccountType, 
+										Long branchId, 
+										Double openingBalance);
 }

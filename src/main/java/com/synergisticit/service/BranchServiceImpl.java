@@ -2,6 +2,8 @@ package com.synergisticit.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,11 @@ public class BranchServiceImpl implements BranchService {
 		this.branchRepository = branchRepository;
 	}
 
+	@Override
+    public Page<Branch> findAll(Pageable pageable) {
+        return branchRepository.findAll(pageable);
+    }
+	
 	@Override
 	@Transactional(readOnly = true)
 	public Branch findByBranchName(String branchName) {
@@ -34,11 +41,11 @@ public class BranchServiceImpl implements BranchService {
 		return branchRepository.findById(branchId).orElse(null);
 	}
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<Branch> findAll() {
-		return branchRepository.findAll();
-	}
+//	@Override
+//	@Transactional(readOnly = true)
+//	public List<Branch> findAll() {
+//		return branchRepository.findAll();
+//	}
 
 	@Override
 	public Branch updateBranchById(Long branchId, Branch updates) {
@@ -59,6 +66,12 @@ public class BranchServiceImpl implements BranchService {
                 })
                 .orElse(null);
     }
+
+	@Override
+	public List<Branch> findAll(Long branchId) {
+		
+		return branchRepository.findAll();
+	}
 
 	
 }

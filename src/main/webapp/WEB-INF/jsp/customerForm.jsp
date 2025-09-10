@@ -12,11 +12,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body class="bg-body">
-  <nav class="navbar navbar-expand-lg bg-dark border-bottom border-secondary">
-    <div class="container">
-      <a class="navbar-brand text-light" href="#">Bank • Customers</a>
-    </div>
-  </nav>
+        <jsp:include page="header.jsp" />
+  
 
   <main class="container py-4">
 
@@ -56,13 +53,13 @@
   			<form:input path="customerSSN" id="ssn" cssClass="form-control"/>
   			<form:errors path="customerSSN" cssClass="text-danger small"/>
 		  </div>
-		 <div class="col-12">
+		 <%-- <div class="col-12">
   			<label class="form-label">Accounts</label><br/>
   			<form:checkboxes path="customerAccounts"
-                   items="${accounts}"
+                   items="${accountTypes}"
                    cssClass="form-check-input" delimiter="&nbsp;&nbsp;&nbsp;"/>
  			 <form:errors path="customerAccounts" cssClass="text-danger small"/>
-		  </div>
+		  </div> --%>
           <div class="col-md-6">
             <label class="form-label" for="addr1">Address Line 1</label>
             <form:input path="customerAddress.addressLine1" id="addr1" cssClass="form-control" placeholder="" />
@@ -98,6 +95,36 @@
             <form:input path="customerAddress.country" id="country" cssClass="form-control" />
             <form:errors path="customerAddress.country" cssClass="text-danger small" />
           </div>
+          
+          <c:if test="${empty customer.customerId}">
+ 		 <div class="col-md-6">
+    		<label class="form-label">Initial Account Type</label>
+   				 <select name="initialAccountType" class="form-select" required>
+   			   <c:forEach var="t" items="${accountTypes}">
+    		    <option value="${t}">${t}</option>
+    			  </c:forEach>
+   				 </select>
+  				  <form:errors path="customerAccounts" cssClass="text-danger"/>
+		</div>
+			</c:if>
+
+
+<!-- Branch for the new account (optional) -->
+			<div class="col-md-6">
+  				<label class="form-label">Branch (optional)</label>
+ 				 <select name="branchId" class="form-select">
+  				  <option value="">(No branch)</option>
+  				  <c:forEach var="b" items="${branches}">
+  				    <option value="${b.branchId}">${b.branchId} — ${b.branchName}</option>
+ 				   </c:forEach>
+				  </select>
+			</div>
+
+<!-- Opening balance (optional; defaults to 0.00 if blank) -->
+			<div class="col-md-6">
+ 				 <label class="form-label">Opening Balance</label>
+				  <input type="number" name="openingBalance" step="0.01" class="form-control" value="0.00"/>
+			</div>
 
           <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -121,6 +148,7 @@
                 <th>DOB</th>
                 <th>Gender</th>
                 <th>SSN</th>
+                <th>Account</th>
                 <th>Address</th>
                 <th>City</th>
                 <th>State</th>
@@ -145,6 +173,7 @@
                       <td>${c.customerDOB}</td>
                       <td>${c.customerGender}</td>
                       <td>${c.customerSSN}</td>
+                      <td>${c.customerAccounts}</td>
                       <td>
                         <c:out value="${c.customerAddress.addressLine1}" />
                         <c:if test="${not empty c.customerAddress.addressLine2}">
