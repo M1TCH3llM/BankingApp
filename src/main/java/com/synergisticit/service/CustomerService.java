@@ -18,4 +18,5 @@ public interface CustomerService {
 										AccountType initialAccountType, 
 										Long branchId, 
 										Double openingBalance);
+	Customer findByUserUsername(String name);
 }

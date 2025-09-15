@@ -82,7 +82,7 @@ public class AccountController {
         }
 
         model.addAttribute("account", form);
-        return "accountPage";
+        return "accountForm";
     }
 
     @PostMapping("/save")

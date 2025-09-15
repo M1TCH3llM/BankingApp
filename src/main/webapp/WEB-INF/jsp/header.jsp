@@ -18,9 +18,13 @@
           <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/role/page">Roles</a></li>
         </sec:authorize>
         
-       
+        <sec:authorize access="hasRole('ROLE_ADMIN')">
           <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/account/page">Accounts</a></li>
-   
+   		</sec:authorize>
+   		
+   		 <sec:authorize access="hasRole('ROLE_ADMIN')">
+   		<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/tx/page">Transactions</a></li>
+        </sec:authorize>
         
         <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/logout">Logout</a></li>
       </ul>

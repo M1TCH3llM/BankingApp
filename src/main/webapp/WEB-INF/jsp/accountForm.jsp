@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </form:select>
               </div>
               
-			 <div class="col-12">
+			 <%-- <div class="col-12">
                 <label class="form-label">Customer (Owner)</label>
                 <select name="customerId" class="form-select" required>
                   <option value="" disabled <c:if test="${empty account.accountCustomer}">selected</c:if>>Choose customer…</option>
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </option>
                   </c:forEach>
                 </select>
-              </div>
+              </div> --%>
 			
               <div class="col-6">
                 <label class="form-label">Date Opened</label>
@@ -159,12 +159,39 @@ document.addEventListener('DOMContentLoaded', function() {
               <!-- Customer select posts raw id -->
             
               
-              <div class="col-12">
-  				<label class="form-label">Owner (auto from Customer)</label>
- 				 <input type="text" class="form-control" id="ownerDisplay"
-       			  value="<c:out value='${account.accountCustomer != null ? account.accountCustomer.customerName : ""}'/>"
-     			    readonly />
-			</div>
+              <c:choose>
+ 				 <c:when test="${lockCustomer}">
+   				 <c:set var="lockedId" value="${presetCustomerId}"/>
+   				 <c:set var="lockedName" value=""/>
+  				  <c:forEach var="cst" items="${customers}">
+   				   <c:if test="${cst.customerId == lockedId}">
+   				     <c:set var="lockedName" value="${cst.customerName}"/>
+   				   </c:if>
+  				  </c:forEach>
+
+  				  <div class="col-12">
+  			    <label class="form-label">Customer (Owner)</label>
+  				    <input type="text" class="form-control" value="${lockedId} — ${lockedName}" readonly/>
+      <!-- post the id the controller expects -->
+  				    <input type="hidden" name="customerId" value="${lockedId}"/>
+  				  </div>
+ 				 </c:when>
+ 				 <c:otherwise>
+    <!-- original dropdown -->
+  				  <div class="col-12">
+  				    <label class="form-label">Customer (Owner)</label>
+   				   <select name="customerId" class="form-select" required>
+  				      <option value="" disabled <c:if test="${empty account.accountCustomer}">selected</c:if>>Choose customer…</option>
+   				     <c:forEach var="cst" items="${customers}">
+  				        <option value="${cst.customerId}"
+   				         <c:if test="${account.accountCustomer ne null and account.accountCustomer.customerId eq cst.customerId}">selected</c:if>>
+    				        ${cst.customerId} — ${cst.customerName}
+   				       </option>
+   				     </c:forEach>
+   				   </select>
+   				 </div>
+  				</c:otherwise>
+			</c:choose>
 
               <!-- Branch select posts raw id -->
               <div class="col-12">

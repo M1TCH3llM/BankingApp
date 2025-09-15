@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-@EntityListeners(value=AuditingEntityListener.class)
+@EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class)
 public abstract class Auditable {
 	
 	@CreatedBy

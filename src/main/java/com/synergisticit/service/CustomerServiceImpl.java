@@ -93,7 +93,11 @@ public class CustomerServiceImpl implements CustomerService  {
 
 	}
 
-	
+	@Override
+	public Customer findByUserUsername(String name) {
+		 return customerRepository.findByUser_Username(name);	
+		 }
+
 		
 		
 }
