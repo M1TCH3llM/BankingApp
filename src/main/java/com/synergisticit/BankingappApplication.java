@@ -18,18 +18,15 @@ public class BankingappApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BankingappApplication.class, args);
 	}
-	
+
 	@Bean
 	public AuditorAware<String> auditorAware() {
-	    return () ->
-	        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-	                .filter(a -> a.isAuthenticated() && !(a instanceof AnonymousAuthenticationToken))
-	                .map(Authentication::getName)
-	                .or(() -> Optional.of("system")); // still returns Optional<String>
+		return () -> Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+				.filter(a -> a.isAuthenticated() && !(a instanceof AnonymousAuthenticationToken))
+				.map(Authentication::getName).or(() -> Optional.of("system")); // still returns Optional<String>
 	}
 
 }
-
 
 // Create Config File Almost Done 
 // Create Controller each entity 
